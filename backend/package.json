@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "db:test:rds": "node scripts/test-rds.js",
+    "prisma:migrate:deploy:rds": "node scripts/prisma-with-secret.js migrate deploy",
+    "prisma:generate:rds": "node scripts/prisma-with-secret.js generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
