@@ -3,6 +3,11 @@ import prisma from '../db'
 import { authenticateToken } from '../middleware/auth'
 
 const router = Router()
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function isValidUuid(id: unknown): id is string {
+  return typeof id === 'string' && UUID_REGEX.test(id)
+}
 
 // Get all matches
 router.get('/', async (req, res) => {
@@ -54,6 +59,10 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({ error: 'Invalid match ID format' })
+    }
 
     const match = await prisma.match.findUnique({
       where: { id },
@@ -140,8 +149,12 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update match (protected)
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const { id } = req.params
+    const { id }: { id: string } = req.params
     const { homeTeam, awayTeam, homeTeamFlag, awayTeamFlag, date, time, status, homeScore, awayScore, group } = req.body
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({ error: 'Invalid match ID format' })
+    }
 
     const updateData: any = {}
 
@@ -195,7 +208,11 @@ router.put('/:id', authenticateToken, async (req, res) => {
 // Delete match (protected)
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    const { id } = req.params
+    const { id }: { id: string } = req.params
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({ error: 'Invalid match ID format' })
+    }
 
     await prisma.match.delete({
       where: { id }
