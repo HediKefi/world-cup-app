@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const { spawn } = require('child_process')
 const AWS = require('aws-sdk')
 

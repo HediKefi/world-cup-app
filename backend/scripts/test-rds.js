@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const fs = require('fs')
 const { Client } = require('pg')
 const AWS = require('aws-sdk')
