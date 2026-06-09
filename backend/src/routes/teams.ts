@@ -3,6 +3,11 @@ import prisma from '../db'
 import { authenticateToken } from '../middleware/auth'
 
 const router = Router()
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function isValidUuid(id: unknown): id is string {
+  return typeof id === 'string' && UUID_REGEX.test(id)
+}
 
 // Get all teams
 router.get('/', async (req, res) => {
@@ -36,6 +41,10 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params
 
+    if (!isValidUuid(id)) {
+      return res.status(400).json({ error: 'Invalid team ID format' })
+    }
+
     const team = await prisma.team.findUnique({
       where: { id }
     })
@@ -56,6 +65,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
     const { name, flag, group, played, wins, draws, losses, goalsFor, goalsAgainst } = req.body
+
+    if (!isValidUuid(id)) {
+      return res.status(400).json({ error: 'Invalid team ID format' })
+    }
 
     const updateData: any = {}
     

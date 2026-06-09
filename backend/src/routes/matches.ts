@@ -149,7 +149,7 @@ router.post('/', authenticateToken, async (req, res) => {
 // Update match (protected)
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
-    const { id }: { id: string } = req.params
+    const { id } = req.params
     const { homeTeam, awayTeam, homeTeamFlag, awayTeamFlag, date, time, status, homeScore, awayScore, group } = req.body
 
     if (!isValidUuid(id)) {
@@ -208,7 +208,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 // Delete match (protected)
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
-    const { id }: { id: string } = req.params
+    const { id } = req.params
 
     if (!isValidUuid(id)) {
       return res.status(400).json({ error: 'Invalid match ID format' })
