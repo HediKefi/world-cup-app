@@ -7,21 +7,28 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "db:test:rds": "node scripts/test-rds.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "seed": "ts-node src/seed.ts"
   },
-  "keywords": ["world-cup", "api", "express"],
+  "keywords": [
+    "world-cup",
+    "api",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "aws-sdk": "^2.1693.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "pg": "^8.21.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

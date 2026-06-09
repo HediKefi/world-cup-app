@@ -1,33 +1,54 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import authRoutes from './routes/auth'
-import matchRoutes from './routes/matches'
-import teamRoutes from './routes/teams'
-import analyticsRoutes from './routes/analytics'
-import predictionRoutes from './routes/predictions'
+import { initializeDatabaseUrlFromSecrets } from './config/database'
 
 dotenv.config()
 
-const app = express()
 const PORT = process.env.PORT || 3001
 
-// Middleware
-app.use(cors())
-app.use(express.json())
+async function bootstrap() {
+  const dbConfigSource = await initializeDatabaseUrlFromSecrets()
+  console.log(`Database config source: ${dbConfigSource}`)
 
-// Routes
-app.use('/api/auth', authRoutes)
-app.use('/api/matches', matchRoutes)
-app.use('/api/teams', teamRoutes)
-app.use('/api/analytics', analyticsRoutes)
-app.use('/api/predictions', predictionRoutes)
+  const [
+    { default: authRoutes },
+    { default: matchRoutes },
+    { default: teamRoutes },
+    { default: analyticsRoutes },
+    { default: predictionRoutes }
+  ] = await Promise.all([
+    import('./routes/auth'),
+    import('./routes/matches'),
+    import('./routes/teams'),
+    import('./routes/analytics'),
+    import('./routes/predictions')
+  ])
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'World Cup 2026 API is running' })
-})
+  const app = express()
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`)
+  // Middleware
+  app.use(cors())
+  app.use(express.json())
+
+  // Routes
+  app.use('/api/auth', authRoutes)
+  app.use('/api/matches', matchRoutes)
+  app.use('/api/teams', teamRoutes)
+  app.use('/api/analytics', analyticsRoutes)
+  app.use('/api/predictions', predictionRoutes)
+
+  // Health check
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', message: 'World Cup 2026 API is running' })
+  })
+
+  app.listen(PORT, () => {
+    console.log(`🚀 Server is running on http://localhost:${PORT}`)
+  })
+}
+
+bootstrap().catch((error) => {
+  console.error('Failed to start server:', error)
+  process.exit(1)
 })
